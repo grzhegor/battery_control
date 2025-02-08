@@ -22,69 +22,6 @@ const index_html = Buffer.from(index_html_raw.toString().replace('!@~#~@!', STAR
 
 let LAST_BATTERY_INFO = (Buffer.from('{}')).toString('base64');
 
-//GPIO Init
-let _isGPIOInitialized = false;
-fs.writeFile(GPIO_VALUE_FILE, '0', (err) =>
-{
-	if (err)
-	{
-		fs.writeFile(GPIO_SELECT_FILE, GPIO_NUMBER.toString(), (err) =>
-		{
-			if (err)
-			{
-				gpioInitializationError(err);
-			}
-			else
-			{
-				fs.writeFile(GPIO_SET_DIRECTION_FILE, 'out', (err) =>
-				{
-					if (err)
-					{
-						gpioInitializationError(err);
-					}
-					else
-					{
-						fs.writeFile(GPIO_VALUE_FILE, '0', (err) =>
-						{
-							if (err)
-							{
-								gpioInitializationError(err);
-							}
-							else
-							{
-								console.log('GPIO has been initialized successfully');
-								_isGPIOInitialized = true;
-							}
-						});
-					}
-				});
-			}
-		});
-	}
-	else
-	{
-		console.log('GPIO has already been initialized');
-		_isGPIOInitialized = true;
-	}
-});
-
-function gpioInitializationError(err)
-{
-	console.log('Warning! GPIO has not been initialized: ' + err?.message);
-}
-
-function setLogicalValueToGPIO(value, callback)
-{
-	if (_isGPIOInitialized)
-	{
-		fs.writeFile(GPIO_VALUE_FILE, value ? '1' : '0', callback);
-	}
-	else
-	{
-		callback(new Error('GPIO was not initialized'));
-	}
-}
-
 http.createServer(app).listen(PORT);
 
 function app(req, res)
