@@ -5,18 +5,12 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const START_TIME = new Date();
-const GPIO_NUMBER = 17;
-const GPIO_SELECT_FILE = '/sys/class/gpio/export';
-const GPIO_SET_DIRECTION_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/direction`;
-const GPIO_VALUE_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/value`;
-
-const RPI_TEMPERATURE_COMMAND = 'vcgencmd measure_temp'; //'/sys/class/thermal/thermal_zone0/temp';
 const TRAFFIC_COMMAND = 'wg show | awk -F \': \' \'/transfer/ {print ($2);}\'';
 
 const index_html_raw = fs.readFileSync(path.join(__dirname, 'index.html'));
 const robots_txt = fs.readFileSync(path.join(__dirname, 'robots.txt'));
 const favicon_ico = fs.readFileSync(path.join(__dirname, 'favicon.ico'));
-const PORT = 80;
+const PORT = 8080;
 
 const index_html = Buffer.from(index_html_raw.toString().replace('!@~#~@!', START_TIME));
 
@@ -58,7 +52,7 @@ function app(req, res)
 			});
 		res.end(robots_txt);
 	}
-	else if (url === '/startCharge')
+	/*else if (url === '/startCharge')
 	{
 		setLogicalValueToGPIO(true, (err) =>
 		{
@@ -91,7 +85,7 @@ function app(req, res)
 				res.end();
 			}
 		});
-	}
+	}*/
 	else if (url === '/setBatteryInfo')
 	{
 		//console.log(req.headers);
