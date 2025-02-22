@@ -1,7 +1,7 @@
 #!/bin/sh
 IS_STARTS_FROM_TERMUX=1
-SERVER="http://192.168.43.2:80" #"http://localhost"
-DEFAULT_MAX_CHARGE=45
+SERVER="http://localhost:8080"
+DEFAULT_MAX_CHARGE=80
 CHECK_BATTERY_STATUS_PERIOD=30 #Секунды
 
 getBatteryData()
@@ -12,6 +12,8 @@ getBatteryData()
 		batteryData=$(echo $(termux-battery-status) | awk -v CHECK_BATTERY_STATUS_PERIOD=$CHECK_BATTERY_STATUS_PERIOD 'END { gsub("}", ", \"checkPeriod\": "CHECK_BATTERY_STATUS_PERIOD" }", $0); print $0 }')
 		currentPercent=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /percentage/ {gsub(/^[ \t]+/, "", $2); print $2 }')
 		batteryStatus=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /status/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
+  		health=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /health/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
+  		temperature=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /temperature/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
 		NOT_CHARGING_STATUS="NOT_CHARGING"
 		CHARGING_STATUS="CHARGING"
 	else
