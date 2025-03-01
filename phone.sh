@@ -12,8 +12,6 @@ getBatteryData()
 		batteryData=$(echo $(termux-battery-status) | awk -v CHECK_BATTERY_STATUS_PERIOD=$CHECK_BATTERY_STATUS_PERIOD 'END { gsub("}", ", \"checkPeriod\": "CHECK_BATTERY_STATUS_PERIOD" }", $0); print $0 }')
 		currentPercent=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /percentage/ {gsub(/^[ \t]+/, "", $2); print $2 }')
 		batteryStatus=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /status/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
-  		health=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /health/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
-  		temperature=$(echo "$batteryData" | awk 'BEGIN {RS = ","; FS = ":"} /temperature/ {gsub(/^[ \t]+|"/, "", $2); print $2 }')
 		NOT_CHARGING_STATUS="NOT_CHARGING"
 		CHARGING_STATUS="CHARGING"
 	else
@@ -35,7 +33,7 @@ getBatteryData()
 IS_MANUAL=0
 if [ -z $1 ]
 then
-	MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 2))
+	MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 20))
 	MAX_CHARGE=$DEFAULT_MAX_CHARGE
 else
 	if [ $1 = "m" ]
@@ -45,13 +43,13 @@ else
 		MAX_CHARGE=$1
 		if [ -z $2 ]
 		then
-			MIN_CHARGE=$(($MAX_CHARGE - 2))
+			MIN_CHARGE=$(($MAX_CHARGE - 20))
 		else
 			MIN_CHARGE=$2
 		fi
-		if [[ $(($MAX_CHARGE - $MIN_CHARGE)) -lt 2 || $(($MAX_CHARGE)) -lt 2 ]]
+		if [[ $(($MAX_CHARGE - $MIN_CHARGE)) -lt 20 || $(($MAX_CHARGE)) -lt 20 ]]
 		then
-			MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 2))
+			MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 20))
 			MAX_CHARGE=$DEFAULT_MAX_CHARGE
 		fi
 	fi
@@ -103,3 +101,4 @@ do
 	fi
 	sleep $CHECK_BATTERY_STATUS_PERIOD
 done
+

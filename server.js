@@ -5,6 +5,12 @@ const path = require('path');
 const { exec } = require('child_process');
 
 const START_TIME = new Date();
+const GPIO_NUMBER = 17;
+const GPIO_SELECT_FILE = '/sys/class/gpio/export';
+const GPIO_SET_DIRECTION_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/direction`;
+const GPIO_VALUE_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/value`;
+
+const RPI_TEMPERATURE_COMMAND = 'vcgencmd measure_temp'; //'/sys/class/thermal/thermal_zone0/temp';
 const TRAFFIC_COMMAND = 'wg show | awk -F \': \' \'/transfer/ {print ($2);}\'';
 
 const index_html_raw = fs.readFileSync(path.join(__dirname, 'index.html'));
@@ -15,6 +21,69 @@ const PORT = 8080;
 const index_html = Buffer.from(index_html_raw.toString().replace('!@~#~@!', START_TIME));
 
 let LAST_BATTERY_INFO = (Buffer.from('{}')).toString('base64');
+
+//GPIO Init
+let _isGPIOInitialized = false;
+fs.writeFile(GPIO_VALUE_FILE, '0', (err) =>
+{
+	if (err)
+	{
+		fs.writeFile(GPIO_SELECT_FILE, GPIO_NUMBER.toString(), (err) =>
+		{
+			if (err)
+			{
+				gpioInitializationError(err);
+			}
+			else
+			{
+				fs.writeFile(GPIO_SET_DIRECTION_FILE, 'out', (err) =>
+				{
+					if (err)
+					{
+						gpioInitializationError(err);
+					}
+					else
+					{
+						fs.writeFile(GPIO_VALUE_FILE, '0', (err) =>
+						{
+							if (err)
+							{
+								gpioInitializationError(err);
+							}
+							else
+							{
+								console.log('GPIO has been initialized successfully');
+								_isGPIOInitialized = true;
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+	else
+	{
+		console.log('GPIO has already been initialized');
+		_isGPIOInitialized = true;
+	}
+});
+
+function gpioInitializationError(err)
+{
+	console.log('Warning! GPIO has not been initialized: ' + err?.message);
+}
+
+function setLogicalValueToGPIO(value, callback)
+{
+	if (_isGPIOInitialized)
+	{
+		fs.writeFile(GPIO_VALUE_FILE, value ? '1' : '0', callback);
+	}
+	else
+	{
+		callback(new Error('GPIO was not initialized'));
+	}
+}
 
 http.createServer(app).listen(PORT);
 
@@ -52,7 +121,7 @@ function app(req, res)
 			});
 		res.end(robots_txt);
 	}
-	/*else if (url === '/startCharge')
+	else if (url === '/startCharge')
 	{
 		setLogicalValueToGPIO(true, (err) =>
 		{
@@ -85,7 +154,7 @@ function app(req, res)
 				res.end();
 			}
 		});
-	}*/
+	}
 	else if (url === '/setBatteryInfo')
 	{
 		//console.log(req.headers);
