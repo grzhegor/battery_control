@@ -11,4 +11,4 @@ echo "Процент заряда батареи: $battery_percentage"
 # Отправка данных брокеру
 echo " "
 mosquitto_pub -h $ip -t "192.168.0.11/battery_percentage" -m $battery_percentage -u $usr -P $pass
-echo "Данные отправлены брокеру в "$date
+echo "Данные отправлены брокеру в "$(date +%F\ %T)
