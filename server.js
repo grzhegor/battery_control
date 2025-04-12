@@ -10,7 +10,7 @@ const GPIO_SELECT_FILE = '/sys/class/gpio/export';
 const GPIO_SET_DIRECTION_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/direction`;
 const GPIO_VALUE_FILE = `/sys/class/gpio/gpio${GPIO_NUMBER}/value`;
 
-const RPI_TEMPERATURE_COMMAND = 'vcgencmd measure_temp'; //'/sys/class/thermal/thermal_zone0/temp';
+const RPI_TEMPERATURE_COMMAND = 'vcgencmd measure_temp'; // /sys/class/thermal/thermal_zone0/temp';
 const TRAFFIC_COMMAND = 'wg show | awk -F \': \' \'/transfer/ {print ($2);}\'';
 
 const index_html_raw = fs.readFileSync(path.join(__dirname, 'index.html'));

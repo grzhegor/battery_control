@@ -1,6 +1,6 @@
 #!/bin/sh
 IS_STARTS_FROM_TERMUX=1
-SERVER="http://localhost:8080"
+SERVER="http://localhost:8080" #"http://192.168.0.11:8080"
 DEFAULT_MAX_CHARGE=80
 CHECK_BATTERY_STATUS_PERIOD=30 #Секунды
 
@@ -33,7 +33,7 @@ getBatteryData()
 IS_MANUAL=0
 if [ -z $1 ]
 then
-	MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 20))
+	MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 40))
 	MAX_CHARGE=$DEFAULT_MAX_CHARGE
 else
 	if [ $1 = "m" ]
@@ -43,13 +43,13 @@ else
 		MAX_CHARGE=$1
 		if [ -z $2 ]
 		then
-			MIN_CHARGE=$(($MAX_CHARGE - 20))
+			MIN_CHARGE=$(($MAX_CHARGE - 40))
 		else
 			MIN_CHARGE=$2
 		fi
-		if [[ $(($MAX_CHARGE - $MIN_CHARGE)) -lt 20 || $(($MAX_CHARGE)) -lt 20 ]]
+		if [[ $(($MAX_CHARGE - $MIN_CHARGE)) -lt 40 || $(($MAX_CHARGE)) -lt 40 ]]
 		then
-			MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 20))
+			MIN_CHARGE=$(($DEFAULT_MAX_CHARGE - 40))
 			MAX_CHARGE=$DEFAULT_MAX_CHARGE
 		fi
 	fi
@@ -101,4 +101,3 @@ do
 	fi
 	sleep $CHECK_BATTERY_STATUS_PERIOD
 done
-

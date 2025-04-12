@@ -1,0 +1,29 @@
+...
+- id: Управление зарядом батареи сервера 192.168.0.11
+  alias: control_battery_charging_192.168.0.11
+  initial_state: true
+  triggers:
+  - platform: numeric_state
+    entity_id: sensor.battery_percentage_2
+    below: 40
+    id: trigger_1
+  - platform: numeric_state
+    entity_id: sensor.battery_percentage_2
+    above: 80
+    id: trigger_2
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: trigger_1
+      sequence:
+      - service: switch.turn_on
+        entity_id: switch.rozetka_aqara_1
+    - conditions:
+      - condition: trigger
+        id: trigger_2
+      sequence:
+      - service: switch.turn_off
+        entity_id: switch.rozetka_aqara_1
+  mode: single
+...
